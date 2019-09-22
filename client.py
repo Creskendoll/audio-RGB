@@ -13,6 +13,9 @@ led = RGBLED(16, 20, 21, active_high=False, pwm=True)
 while True:
     data, addr = client.recvfrom(1024)
     data = json.loads(data.decode('utf-8'))
-    
+
+    # set object property
+    # tuple
+    # dictionary    
     led.color = (data['red']/255, data['green']/255, data['blue']/255)
     print(data)
