@@ -12,7 +12,7 @@ class Audio:
         if not self.recognize_thread:
             self.recognize_thread = Thread(target=self.recognize, args=())
             self.recognize_thread.start()
-            
+
     def stopRecognizing(self):
         self.recognize_thread.join()
         self.recognize_thread = None
@@ -20,11 +20,11 @@ class Audio:
     def recognize(self, *args):
         with sr.Microphone() as source:
             while True:
-                print("Listening")
+                yield "Listening"
                 audio = self.r.listen(source)   
-                print("Sending...")
+                yield "Sending"
                 try:
-                    print(r.recognize_google(audio))
+                    yield self.r.recognize_google(audio)
                 except sr.UnknownValueError:
                     print("Could not understand audio")
                 except sr.RequestError as e:
