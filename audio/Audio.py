@@ -1,12 +1,14 @@
 
 import speech_recognition as sr  
 from threading import Thread
+from StateEnum import StateEnum
 
-class Audio:
+class Audio(object):
 
-    def __init__(self):
+    def __init__(self, queue):
         self.r = sr.Recognizer()
         self.recognize_thread = None
+        self.queue = queue
 
     def startRecognizing(self):
         if not self.recognize_thread:
@@ -20,12 +22,13 @@ class Audio:
     def recognize(self, *args):
         with sr.Microphone() as source:
             while True:
-                yield "Listening"
-                audio = self.r.listen(source)   
-                yield "Sending"
+                self.queue.put(StateEnum.LISTENING)
+                audio = self.r.listen(source)
+                self.queue.put(StateEnum.SENDING)
                 try:
-                    yield self.r.recognize_google(audio)
+                    self.queue.put(self.r.recognize_google(audio))
                 except sr.UnknownValueError:
-                    print("Could not understand audio")
+                    self.queue.put(StateEnum.NOT_UNDERSTOOD)
                 except sr.RequestError as e:
-                    print("Could not request results; {0}".format(e))
+                    print(e)
+                    self.queue.put(StateEnum.ERROR)
