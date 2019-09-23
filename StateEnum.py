@@ -5,3 +5,7 @@ class StateEnum(Enum):
     OK = 2
     NOT_UNDERSTOOD = 3
     ERROR = 4
+    OFF = 5
+    ON = 6
+    BLINK = 7
+    CHANGE_COLOR = 8
