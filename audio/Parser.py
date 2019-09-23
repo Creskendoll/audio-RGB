@@ -18,9 +18,11 @@ class Parser(object):
         # Known words
         self.vocab = {**self.colors, **self.actions}
 
-    def parse(self, s, callback=None):
+    def parse(self, s:str, callback=None):
+        s = s.lower()
         # Check if a known word is inside the text
         for word in self.vocab.keys():
+            word = word.lower()
             # If the word is a color
             if word in s and word in self.colors.keys():
                 if callback:
@@ -28,7 +30,7 @@ class Parser(object):
                     callback(StateEnum.CHANGE_COLOR, self.vocab[word])
                 break
             # If the word is an action
-            elif word in self.actions:
+            elif word in s and word in self.actions.keys():
                 if callback:
                     # We don't need to pass a color 
                     callback(self.vocab[word])

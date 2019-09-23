@@ -32,7 +32,7 @@ class Audio(object):
             while True:
                 # Update queue
                 self.queue.put(StateEnum.LISTENING)
-                self.r.adjust_for_ambient_noise(source)
+                self.r.adjust_for_ambient_noise(source, duration=2)
                 # The execution stops until a sentence is heard
                 audio = self.r.listen(source)
                 self.queue.put(StateEnum.SENDING)

@@ -14,7 +14,7 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     actions = [StateEnum.ON, StateEnum.OFF, StateEnum.BLINK]
     # We might want to do additional stuff if the state is an action
     if actionType in actions:
-        print("Action")
+        print("State:", actionType.name)
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
         setLED(color)
@@ -53,6 +53,7 @@ def main():
         else:
             # Not explicitly checking for the OK state because if the speech is understood
             # the value of result will be a string
+            print("You said:", result)
             p.parse(result, callback=action)
         
         q.task_done()

@@ -9,4 +9,4 @@ class Color(object):
 
     # to string method
     def __str__(self):
-        return (self.red, self.green, self.blue)
+        return "Color (R:{}, G:{}, B:{})".format(self.red, self.green, self.blue)
