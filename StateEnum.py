@@ -1,5 +1,6 @@
 from enum import Enum
 class StateEnum(Enum):
+    # Possible states of the system
     LISTENING = 0
     SENDING = 1
     OK = 2
