@@ -23,6 +23,7 @@ class Audio(object):
         with sr.Microphone() as source:
             while True:
                 self.queue.put(StateEnum.LISTENING)
+                self.r.adjust_for_ambient_noise(source)
                 audio = self.r.listen(source)
                 self.queue.put(StateEnum.SENDING)
                 try:

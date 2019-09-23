@@ -20,19 +20,18 @@ def main():
     p = Parser()
     a.startRecognizing()
     while True:
-        w = q.get()
-        if w is None: continue
-        
-        if w == StateEnum.SENDING:
+        result = q.get()
+        if result is None: continue
+        if result == StateEnum.SENDING:
             print("Sending...")
-        elif w == StateEnum.LISTENING:
+        elif result == StateEnum.LISTENING:
             print("Listening...")
-        elif w == StateEnum.ERROR:
+        elif result == StateEnum.ERROR:
             print("Error!")
-        elif w == StateEnum.NOT_UNDERSTOOD:
+        elif result == StateEnum.NOT_UNDERSTOOD:
             print("Not understood!")
         else:
-            p.parse(w, callback=action)
+            p.parse(result, callback=action)
         
         q.task_done()
     a.stopRecognizing()
