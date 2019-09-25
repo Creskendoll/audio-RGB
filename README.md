@@ -22,6 +22,9 @@ Run `main.py` to start the program. You have to have a microphone attach to your
 
 The program will automatically detect speech and use Google's services to convert audio to text.
 
+Try running this if you get an error:
+- `sudo apt-get install portaudio19-dev`
+
 ## Structure
 The code is separated into 2 major parts, audio and visual. The audio module deals with the speech to text work while the visual module handles the LEDs. Audio processing is done asynchronously to enable the main thread to change states independently. 
 
