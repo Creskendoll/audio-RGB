@@ -15,6 +15,8 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     # We might want to do additional stuff if the state is an action
     if actionType in actions:
         print("State:", actionType.name)
+    elif actionType == StateEnum.NOT_UNDERSTOOD:
+        print("Vocab:", list(Parser().vocab.keys()))
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
         setLED(color)
@@ -35,28 +37,30 @@ def main():
     # Start the audio recognition thread
     a.startRecognizing()
     # Run the main thread
-    while True:
-        # The execution of the main thread will stop here and wait for  
-        # a new item in the queue
-        result = q.get()
-        # Null check
-        if result is None: continue
-        # The results are the states listed above 
-        if result == StateEnum.SENDING:
-            print("Sending...")
-        elif result == StateEnum.LISTENING:
-            print("Listening...")
-        elif result == StateEnum.ERROR:
-            print("Error!")
-        elif result == StateEnum.NOT_UNDERSTOOD:
-            print("Not understood!")
-        else:
-            # Not explicitly checking for the OK state because if the speech is understood
-            # the value of result will be a string
-            print("You said:", result)
-            p.parse(result, callback=action)
-        
-        q.task_done()
+    while a.recognize_thread.isAlive():
+        try:
+            # The execution of the main thread will stop here and wait for  
+            # a new item in the queue
+            result = q.get()
+            # The results are the states listed above 
+            if result == StateEnum.SENDING:
+                print("Sending...")
+            elif result == StateEnum.LISTENING:
+                print("Listening...")
+            elif result == StateEnum.ERROR:
+                print("Error!")
+            elif result == StateEnum.NOT_UNDERSTOOD:
+                print("Not understood!")
+            else:
+                # Not explicitly checking for the OK state because if the speech is understood
+                # the value of result will be a string
+                print("You said:", result)
+                p.parse(result, callback=action)
+            
+            q.task_done()
+        except:
+            # (KeyboardInterrupt, SystemExit)
+            quit()
     # Stop the threads
     a.stopRecognizing()
 
