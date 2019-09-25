@@ -1,6 +1,8 @@
 import speech_recognition as sr  
 from threading import Thread
 from StateEnum import StateEnum
+# http://docs.kitt.ai/snowboy/#downloads
+# import snowboydecoder
 
 class Audio(object):
 
@@ -12,6 +14,7 @@ class Audio(object):
         self.recognize_thread = None
         # Store the queue pointer
         self.queue = queue
+        # self.hot_word_detector = snowboydecoder.HotwordDetector("../jarvis.pmdl", sensitivity=0.5)
 
     # Start listening
     def startRecognizing(self):
@@ -27,14 +30,15 @@ class Audio(object):
 
     # Runs async and populates the queue with states and strings
     def recognize(self, *args):
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index=None) as source:
             # Run continuously
             while True:
                 # Update queue
                 self.queue.put(StateEnum.LISTENING)
-                self.r.adjust_for_ambient_noise(source, duration=2)
+                self.r.adjust_for_ambient_noise(source, duration=0.5)
                 # The execution stops until a sentence is heard
                 audio = self.r.listen(source)
+                # audio = self.r.record(source, duration=2)
                 self.queue.put(StateEnum.SENDING)
                 try:
                     # Send the audio to google and get the response
