@@ -3,6 +3,11 @@ from visual import Color
 
 class Parser(object):
     def __init__(self):
+        """Parser initiate vocabulary.
+
+        The parser vocab is made out of colors and actions.
+        More keywords can be added to the dicts.
+        """
         # TODO: Add more colors
         self.colors = {
             "red": Color(255,0,0),
@@ -24,24 +29,31 @@ class Parser(object):
         # Known words
         self.vocab = {**self.colors, **self.actions}
 
-    def parse(self, s:str, callback=None):
+    
+    def parse(self, s:str, callback):
+        """Parse text and execute a callback.
+
+        A string and a callback function of (StateEnum) -> void must be passed.
+        The function will check for words in the text and either return a color or an action.
+        """
         s = s.lower().split()
         understood = False
+
         # Check if a known word is inside the text
-        for word in self.vocab.keys():
-            # If the word is a color
-            if word in s and word in self.colors.keys():
-                if callback:
-                    # Pass the color to the callback function
-                    callback(StateEnum.CHANGE_COLOR, self.vocab[word])
-                understood = True
-                break
+        for word in s:
             # If the word is an action
-            elif word in s and word in self.actions.keys():
-                if callback:
-                    # We don't need to pass a color 
-                    callback(self.vocab[word])
+            if word in self.actions.keys():
+                # We don't need to pass a color 
+                callback(self.vocab[word])
                 understood = True
+                # Break the loop once we find a vocab word in the sentence
+                break
+            # If the word is a color
+            elif word in self.colors.keys():
+                # Pass the color to the callback function
+                callback(StateEnum.CHANGE_COLOR, self.vocab[word])
+                understood = True
+                # Break the loop once we find a vocab word in the sentence
                 break
 
         if not understood and callback:

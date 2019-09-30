@@ -1,3 +1,4 @@
 SpeechRecognition==3.8.1
 gpiozero==1.5.1
 PyAudio==0.2.11
+snowboy==1.2.0b1

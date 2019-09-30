@@ -10,3 +10,7 @@ class Color(object):
     # to string method
     def __str__(self):
         return "Color (R:{}, G:{}, B:{})".format(self.red, self.green, self.blue)
+
+    # Returns the normalized RGB values as a tuple
+    def getLEDColor(self):
+        return (self.red/255, self.green/255, self.blue/255)

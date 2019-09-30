@@ -11,29 +11,30 @@ class Audio(object):
         # Speech recognizer
         self.r = sr.Recognizer()
         # Keep thread None when not being used
-        self.recognize_thread = None
+        self.running = False
         # Store the queue pointer
         self.queue = queue
         # self.hot_word_detector = snowboydecoder.HotwordDetector("../jarvis.pmdl", sensitivity=0.5)
 
     # Start listening
-    def startRecognizing(self):
-        if not self.recognize_thread:
+    def start(self):
+        if not self.running:
+            self.running = True
             self.recognize_thread = Thread(target=self.recognize, args=())
             self.recognize_thread.start()
 
     # Stop listening
-    def stopRecognizing(self):
-        # Stop and reset the thread
-        self.recognize_thread.join(1)
-        self.recognize_thread = None
-        self.queue.join()
+    def stop(self):
+        if self.running:
+            # Stop and reset the thread
+            self.running = False
+            self.recognize_thread.join()
 
     # Runs async and populates the queue with states and strings
     def recognize(self, *args):
         with sr.Microphone(device_index=None) as source:
             # Run continuously
-            while self.recognize_thread.isAlive():
+            while self.running:
                 try:
                     # Update queue
                     self.queue.put(StateEnum.LISTENING)
@@ -53,4 +54,4 @@ class Audio(object):
                         self.queue.put(StateEnum.ERROR)
                 except:
                     #  (KeyboardInterrupt, SystemExit)
-                    self.stopRecognizing()
+                    self.stop()

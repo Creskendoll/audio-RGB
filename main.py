@@ -1,12 +1,11 @@
-from audio import Audio
+from audio import Audio, Parser
 from queue import Queue
-from audio import Parser
 from StateEnum import StateEnum
-from visual.Color import Color
+from visual import Color
 
 # TODO: make this set the Color of the LEDs
 def setLED(color: Color):
-    print(color)
+    print(color.getLEDColor())
 
 # This function is called from within the Parser
 def action(actionType:StateEnum, color:Color=Color(0,0,0)):
@@ -35,9 +34,9 @@ def main():
     # The parser checks for meaning in the text and runs corresponding functions
     p = Parser()
     # Start the audio recognition thread
-    a.startRecognizing()
+    a.start()
     # Run the main thread
-    while a.recognize_thread.isAlive():
+    while a.running:
         try:
             # The execution of the main thread will stop here and wait for  
             # a new item in the queue
@@ -55,14 +54,15 @@ def main():
                 # Not explicitly checking for the OK state because if the speech is understood
                 # the value of result will be a string
                 print("You said:", result)
-                p.parse(result, callback=action)
+                p.parse(result, action)
             
             q.task_done()
         except:
             # (KeyboardInterrupt, SystemExit)
+            a.stop()
             quit()
     # Stop the threads
-    a.stopRecognizing()
+    a.stop()
 
 # Run the program
 if __name__ == "__main__":
