@@ -1,11 +1,16 @@
 from audio import Audio, Parser
 from queue import Queue
 from StateEnum import StateEnum
-from visual import Color
+from visual import Color, Led
+
+init_color = Color(255, 255, 255)
+pins = (16, 20, 21)
+
+led = Led(init_color, pins)
 
 # TODO: make this set the Color of the LEDs
 def setLED(color: Color):
-    print(color.getLEDColor())
+    led.setColor(color)
 
 # This function is called from within the Parser
 def action(actionType:StateEnum, color:Color=Color(0,0,0)):

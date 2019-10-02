@@ -33,15 +33,15 @@ class Audio(object):
     # Runs async and populates the queue with states and strings
     def recognize(self, *args):
         with sr.Microphone(device_index=None) as source:
+            self.r.adjust_for_ambient_noise(source, duration=1)
             # Run continuously
             while self.running:
                 try:
                     # Update queue
                     self.queue.put(StateEnum.LISTENING)
-                    self.r.adjust_for_ambient_noise(source, duration=0.5)
                     # The execution stops until a sentence is heard
                     audio = self.r.listen(source)
-                    # audio = self.r.record(source, duration=2)
+                    # audio = self.r.record(source, duration=3)
                     self.queue.put(StateEnum.SENDING)
                     try:
                         # Send the audio to google and get the response

@@ -13,4 +13,4 @@ class Color(object):
 
     # Returns the normalized RGB values as a tuple
     def getLEDColor(self):
-        return (self.red/255, self.green/255, self.blue/255)
+        return (self.red/255.0, self.green/255.0, self.blue/255.0)

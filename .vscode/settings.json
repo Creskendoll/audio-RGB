@@ -2,5 +2,8 @@
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
   "python.linting.pylamaEnabled": false,
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "cSpell.words": [
+    "tkinter"
+  ]
 }
