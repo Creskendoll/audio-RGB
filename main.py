@@ -3,14 +3,9 @@ from queue import Queue
 from StateEnum import StateEnum
 from visual import Color, Led
 
-init_color = Color(255, 255, 255)
-pins = (16, 20, 21)
-
+init_color = Color(0, 255, 0)
+pins = (14, 15, 18)
 led = Led(init_color, pins)
-
-# TODO: make this set the Color of the LEDs
-def setLED(color: Color):
-    led.setColor(color)
 
 # This function is called from within the Parser
 def action(actionType:StateEnum, color:Color=Color(0,0,0)):
@@ -19,11 +14,14 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     # We might want to do additional stuff if the state is an action
     if actionType in actions:
         print("State:", actionType.name)
+    elif actionType == StateEnum.ON or actionType == StateEnum.OFF:
+        # Toggle led on and off
+        led.toggleOn()
     elif actionType == StateEnum.NOT_UNDERSTOOD:
         print("Vocab:", list(Parser().vocab.keys()))
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
-        setLED(color)
+        led.setColor(color)
 
 # This function runs on the main thread, which handles the machine state
 # Such as the colors of the LEDs and indicator lights.

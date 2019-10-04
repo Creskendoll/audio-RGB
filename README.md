@@ -1,10 +1,10 @@
 # audio-RGB
 
-A program to control LEDs using voice commands with a Raspberry PI. The purpose of this project is to control a RGB led strip via a microphone attach to it.
+A program to control LEDs using voice commands with a Raspberry PI. The purpose of this project is to control a RGB led strip via a microphone.
 This project is optimized and built for the Raspberry PI but can be modified to fit various applications.
 
 ## Installation
-The project is written on Python 3.7.3.
+The project is written with Python 3.6. Pyaudio doesn't support Python 3.7 at the time of developing this project. 
 
 You need `pip` in order to install dependencies.
 
@@ -27,6 +27,17 @@ Try running this if you get an error:
 
 ## Structure
 The code is separated into 2 major parts, audio and visual. The audio module deals with the speech to text work while the visual module handles the LEDs. Audio processing is done asynchronously to enable the main thread to change states independently. 
+
+## Wiring of LEDs
+You have to plug in the RGB connectors of your LEDs to the respective pins of your Raspberry. The pins can be provided to the Led constructor.
+
+- Red -> 14(TXD)
+- Green -> 15(RXD)
+- Blue -> 18(PWM0)
+
+If you're running a LED which requires more than 5V to work, then you need an external power supply.
+
+[Refer to this page for the Raspberry PI pinout.](https://pinout.xyz/)
 
 ### Speech recognition
 Project depends the SpeechRecognition library which uses Google's services to turn sound into text.

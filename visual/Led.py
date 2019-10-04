@@ -16,6 +16,18 @@ class Led(object):
         print("Setting color to:", color.getLEDColor())
         self.led.color = color.getLEDColor()
 
+    def blink(self, interval):
+        # TODO: finish this function
+        pass
+    
+    def fade(self, colors):
+        # TODO: Fade through the list of colors
+        pass 
+
+    def toggleOn(self):
+        # Turn on/off the led
+        pass
+
 ############ Example usage of the class ############
 # Green
 # init_color = Color(0, 255, 0)
