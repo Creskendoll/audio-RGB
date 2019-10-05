@@ -12,7 +12,9 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     # The states are seperated into 2 as 'actions' and `set color`
     actions = [StateEnum.ON, StateEnum.OFF, StateEnum.BLINK]
     # We might want to do additional stuff if the state is an action
-    if actionType in actions:
+    if actionType == StateEnum.ON:
+       led.blink()
+    elif actionType in actions:
         print("State:", actionType.name)
     elif actionType == StateEnum.ON or actionType == StateEnum.OFF:
         # Toggle led on and off
@@ -22,7 +24,7 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
         led.setColor(color)
-
+       
 # This function runs on the main thread, which handles the machine state
 # Such as the colors of the LEDs and indicator lights.
 def main():

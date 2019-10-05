@@ -1,6 +1,5 @@
 from gpiozero import RGBLED
 from visual import Color
-
 class Led(object):
     # Takes in an initial color and the pin numbers of the RGB LED
     def __init__(self, color, pins):
@@ -12,12 +11,13 @@ class Led(object):
         self.setColor(color)
 
     # Set the color of the LED
-    def setColor(self, color):
+    def setColor(self, color:Color):
         print("Setting color to:", color.getLEDColor())
         self.led.color = color.getLEDColor()
 
-    def blink(self, interval):
-        # TODO: finish this function
+    def blink(self):
+        print("Led is turning on and off.")
+        self.led.blink()
         pass
     
     def fade(self, colors):
