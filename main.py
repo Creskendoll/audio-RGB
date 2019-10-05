@@ -31,6 +31,7 @@ def main():
     # These events are:
     # SENDING, LISTENING, ERROR, NOT_UNDERSTOOD and OK
     q = Queue()
+    print("asd")
     # Pass the reference of the queue to the Audio object so that it can add
     # items to it
     a = Audio(q)
