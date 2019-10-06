@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py"
+    },
+    {
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
