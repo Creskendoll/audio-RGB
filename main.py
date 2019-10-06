@@ -23,8 +23,8 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
         print("Vocab:", list(Parser().vocab.keys()))
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
-         led.setColor(color)
-       pass
+        led.setColor(color)
+       
 # This function runs on the main thread, which handles the machine state
 # Such as the colors of the LEDs and indicator lights.
 def main():
