@@ -47,7 +47,7 @@ SAMPLE_RATE = 44100
 BUFFER_SIZE = 2**11     # Changing this will change the frequency response of the algorithm
 CUTOFF_FREQ = 20000     # LPF freq (Hz)
 
-CLIENT = '192.168.0.66' # UDP Client
+CLIENT = '192.168.0.70' # UDP Client
 
 ########## GUI ###################################################
 

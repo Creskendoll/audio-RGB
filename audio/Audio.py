@@ -54,4 +54,6 @@ class Audio(object):
                         self.queue.put(StateEnum.ERROR)
                 except:
                     #  (KeyboardInterrupt, SystemExit)
+                    self.queue.put(StateEnum.END)
                     self.stop()
+

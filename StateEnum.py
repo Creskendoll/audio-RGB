@@ -10,3 +10,4 @@ class StateEnum(Enum):
     ON = 6
     BLINK = 7
     CHANGE_COLOR = 8
+    END = 9

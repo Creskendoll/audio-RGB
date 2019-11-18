@@ -10,7 +10,7 @@ from threading import Thread
 
 ########## APPLICATION SETTINGS ################################################
 
-CLIENT = '192.168.0.66' # UDP Client
+CLIENT = '192.168.0.70' # UDP Client
 
 ########## CODE ################################################################
 
