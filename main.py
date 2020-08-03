@@ -5,15 +5,17 @@ from visual import Color, Led
 
 init_color = Color(0, 255, 0)
 pins = (14, 15, 18)
-led = Led(init_color, pins)
+# led = Led(init_color, pins)
 
 # This function is called from within the Parser
-def action(actionType:StateEnum, color:Color=Color(0,0,0)):
+
+
+def action(actionType: StateEnum, color: Color = Color(0, 0, 0)):
     # The states are seperated into 2 as 'actions' and `set color`
     actions = [StateEnum.ON, StateEnum.OFF, StateEnum.BLINK]
     # We might want to do additional stuff if the state is an action
     if actionType == StateEnum.ON:
-       led.blink()
+        led.blink()
     elif actionType in actions:
         print("State:", actionType.name)
     elif actionType == StateEnum.ON or actionType == StateEnum.OFF:
@@ -24,9 +26,11 @@ def action(actionType:StateEnum, color:Color=Color(0,0,0)):
     elif actionType == StateEnum.CHANGE_COLOR:
         # Change the color of the LEDs
         led.setColor(color)
-       
+
 # This function runs on the main thread, which handles the machine state
 # Such as the colors of the LEDs and indicator lights.
+
+
 def main():
     # Create and store the event queue in the main thread
     # The queue keeps the events that happen during listening to the audio
@@ -43,10 +47,10 @@ def main():
     # Run the main thread
     while a.running:
         try:
-            # The execution of the main thread will stop here and wait for  
+            # The execution of the main thread will stop here and wait for
             # a new item in the queue
             result = q.get()
-            # The results are the states listed above 
+            # The results are the states listed above
             if result == StateEnum.SENDING:
                 print("Sending...")
             elif result == StateEnum.LISTENING:
@@ -55,12 +59,14 @@ def main():
                 print("Error!")
             elif result == StateEnum.NOT_UNDERSTOOD:
                 print("Not understood!")
+            elif result == StateEnum.END:
+                a.stop()
             else:
                 # Not explicitly checking for the OK state because if the speech is understood
                 # the value of result will be a string
                 print("You said:", result)
                 p.parse(result, action)
-            
+
             q.task_done()
         except:
             # (KeyboardInterrupt, SystemExit)
@@ -68,6 +74,7 @@ def main():
             quit()
     # Stop the threads
     a.stop()
+
 
 # Run the program
 if __name__ == "__main__":
