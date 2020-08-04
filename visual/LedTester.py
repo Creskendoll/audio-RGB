@@ -10,7 +10,7 @@ from threading import Thread
 
 ########## APPLICATION SETTINGS ################################################
 
-CLIENT = '192.168.0.70' # UDP Client
+CLIENT = '192.168.1.69'  # UDP Client
 
 ########## CODE ################################################################
 
@@ -24,23 +24,25 @@ server.bind(("", 44444))
 
 ########## server ###################################################
 
-def sendData(red_scale,green_scale,blue_scale):
-  prev_color = {
-      "red": red_scale.get(),
-      "green": green_scale.get(),
-      "blue": blue_scale.get()
+
+def sendData(red_scale, green_scale, blue_scale):
+    prev_color = {
+        "red": red_scale.get(),
+        "green": green_scale.get(),
+        "blue": blue_scale.get()
     }
-  while True:
-    colors = {
-      "red": red_scale.get(),
-      "green": green_scale.get(),
-      "blue": blue_scale.get()
-    }
-    if prev_color != colors:
-      # print(colors)
-      prev_color = colors
-      msg = json.dumps(colors).encode('utf-8')
-      server.sendto(msg, (CLIENT, 37020))
+    while True:
+        colors = {
+            "red": red_scale.get(),
+            "green": green_scale.get(),
+            "blue": blue_scale.get()
+        }
+        if prev_color != colors:
+            # print(colors)
+            prev_color = colors
+            msg = json.dumps(colors).encode('utf-8')
+            server.sendto(msg, (CLIENT, 37020))
+
 
 master = Tk()
 ########## GUI ###################################################

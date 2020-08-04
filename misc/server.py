@@ -20,17 +20,16 @@ from helpers import *
 
 # Loudness detect:
 # frequency channel of the FFT to use (see console output to decide)
-CHANNEL = 1
-GAIN = 0.7       # audio gain (multiplier)
-THRESHOLD = 0.22  # audio trigger threshold
+CHANNEL = 3
+GAIN = 0.33       # audio gain (multiplier)
+THRESHOLD = 0.2  # audio trigger threshold
 
-#
 ATTACK = 0.006  # amount of rowdz increase with loudness
 DECAY = 0.006   # amount of rowdz decay
 
 # Brightness:
 MODULATION = 0.3        # amount of loudness flickering modulation
-MIN_BRIGHTNESS = 0.01    # minimum brightness
+MIN_BRIGHTNESS = 0.001    # minimum brightness
 
 # Hue mapping:
 MIN_HUE = 0
@@ -82,10 +81,6 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 server.settimeout(0.2)
 server.bind(("", 44444))
 
-# Open comms port to Arduino
-# if COM_PORT:
-#     RGB = RGBController(COM_PORT)
-
 ########## GLOBAL VARIABLES ####################################################
 
 red = 0
@@ -128,7 +123,6 @@ while True:
 
     # Loudness detection
     channels_avg = sum(yy[:CHANNEL]) / CHANNEL
-    # yy[CHANNEL]
     loudness = thresh(channels_avg * GAIN, THRESHOLD)
 
     # Noisiness meter
