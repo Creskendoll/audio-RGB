@@ -14,22 +14,24 @@ from scipy import pi, signal
 # import serial
 import struct
 import time
-from helpers import *
+from misc.helpers import *
 
 ########## SETTINGS ##############################################
 
 # Loudness detect:
 # frequency channel of the FFT to use (see console output to decide)
-CHANNEL = 3
-GAIN = 0.33       # audio gain (multiplier)
+CHANNEL_RANGE = 15
+CHANNEL_RANGE_START = 0
+CHANNEL_RANGE_END = 3
+GAIN = 0.2       # audio gain (multiplier)
 THRESHOLD = 0.2  # audio trigger threshold
 
-ATTACK = 0.006  # amount of rowdz increase with loudness
+ATTACK = 0.008  # amount of rowdz increase with loudness
 DECAY = 0.006   # amount of rowdz decay
 
 # Brightness:
-MODULATION = 0.3        # amount of loudness flickering modulation
-MIN_BRIGHTNESS = 0.001    # minimum brightness
+MODULATION = 0.1        # amount of loudness flickering modulation
+MIN_BRIGHTNESS = 0.3    # minimum brightness
 
 # Hue mapping:
 MIN_HUE = 0
@@ -43,8 +45,8 @@ MAX_HUE = 360
 COM_PORT = None
 
 # Audio capture settings
-SAMPLE_RATE = 44100
-BUFFER_SIZE = 2**11     # Changing this will change the frequency response of the algorithm
+SAMPLE_RATE = 96000
+BUFFER_SIZE = 2**12     # Changing this will change the frequency response of the algorithm
 CUTOFF_FREQ = 20000     # LPF freq (Hz)
 
 CLIENT = '192.168.1.69'  # UDP Client
@@ -96,7 +98,7 @@ falling = False     # Is modulation rising or falling
 while True:
     ## Part 1: Sample Audio ##
 
-    cur_time = time.time()
+    # cur_time = time.time()
     # Get audio sample
     buf = stream.read(BUFFER_SIZE)
     data = scipy.array(struct.unpack("%dh" % (BUFFER_SIZE), buf))
@@ -116,13 +118,13 @@ while True:
     y = y / 5
 
     # Average into chunks of N
-    N = 15
-    yy = [scipy.average(y[n:int(n+N)]) for n in range(0, len(y), N)]
+    yy = [scipy.average(y[n:int(n+CHANNEL_RANGE)])
+          for n in range(0, len(y), CHANNEL_RANGE)]
     # Discard half of the samples, as they are mirrored
-    yy = yy[:int(len(yy)/2)]
+    yy = yy[:len(yy)//2]
 
     # Loudness detection
-    channels_avg = sum(yy[:CHANNEL]) / CHANNEL
+    channels_avg = sum(yy[CHANNEL_RANGE_START:CHANNEL_RANGE_END])
     loudness = thresh(channels_avg * GAIN, THRESHOLD)
 
     # Noisiness meter
@@ -135,7 +137,8 @@ while True:
 
     # Brightness modulation
     modulation = MODULATION * limit(noisiness, 0.0, 1.0)
-    brightness = limit(MIN_BRIGHTNESS + loudness, 0.0, 1.0)
+    brightness = limit(MIN_BRIGHTNESS + (1. -
+                                         MIN_BRIGHTNESS) * loudness, 0.0, 1.0)
 
     # Hue modulation (power relationship)
     # mapping = (10 ** limit(noisiness, 0.0, 1.0)) / 10.0
@@ -168,7 +171,7 @@ while True:
     update_bars(labels, bars)
 
     colors = {
-        "time": cur_time,
+        "time": 0,
         "red": red,
         "green": green,
         "blue": blue

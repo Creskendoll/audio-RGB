@@ -1,4 +1,4 @@
-from audio import Audio, Parser
+from audio import TranscribeWorker, Parser
 from queue import Queue
 from StateEnum import StateEnum
 from visual import Color, Led

@@ -2,8 +2,7 @@ import numpy as np
 import cv2
 import socket
 import json
-
-# Alternative
+from PIL import Image
 from mss import mss
 
 CLIENT = '192.168.1.69'  # UDP Client
@@ -29,6 +28,16 @@ with mss() as sct:
         # Alternative
         frame = np.array(sct.grab(region))
 
+        # cv2.imshow("screenshot", frame)
+        # if cv2.waitKey(1) == ord("q"):
+        #     break
+
+        # Get dominant color
+        # img = Image.fromarray(frame)
+        # colors = img.getcolors(1920*1080)
+        # dominant = max(colors, key=lambda px: px[0])
+        # avg_color = dominant[1]
+
         avg_color = getAverageColor(frame)
 
         colors = {
@@ -40,8 +49,4 @@ with mss() as sct:
         msg = json.dumps(colors).encode('utf-8')
         server.sendto(msg, (CLIENT, 37020))
 
-    #     print(avg_color)
-    #     cv2.imshow("screenshot", frame)
-    #     if cv2.waitKey(1) == ord("q"):
-    #         break
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()

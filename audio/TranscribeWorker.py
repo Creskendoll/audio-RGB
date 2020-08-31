@@ -1,12 +1,13 @@
-import speech_recognition as sr  
+import speech_recognition as sr
 from threading import Thread
 from StateEnum import StateEnum
 # http://docs.kitt.ai/snowboy/#downloads
 # import snowboydecoder
 
-class Audio(object):
 
-    # Takes in a Queue pointer 
+class TranscribeWorker(object):
+
+    # Takes in a Queue pointer
     def __init__(self, queue):
         # Speech recognizer
         self.r = sr.Recognizer()
@@ -56,4 +57,3 @@ class Audio(object):
                     #  (KeyboardInterrupt, SystemExit)
                     self.queue.put(StateEnum.END)
                     self.stop()
-
