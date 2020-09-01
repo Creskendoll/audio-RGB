@@ -3,7 +3,7 @@ class WorkerConfig(object):
         super().__init__()
         # Loudness detect:
         # frequency channel of the FFT to use (see console output to decide)
-        self.CHANNEL_RANGE = 15
+        self.CHANNEL_RANGE = 150
         self.CHANNEL_RANGE_START = 0
         self.CHANNEL_RANGE_END = 3
         self.GAIN = 0.2       # audio gain (multiplier)
@@ -13,7 +13,6 @@ class WorkerConfig(object):
         self.DECAY = 0.006   # amount of rowdz decay
 
         # Brightness:
-        self.MODULATION = 0.1        # amount of loudness flickering modulation
         self.MIN_BRIGHTNESS = 0.3    # minimum brightness
 
         # Hue mapping:
@@ -29,3 +28,6 @@ class WorkerConfig(object):
         self.CUTOFF_FREQ = 20000     # LPF freq (Hz)
 
         self.CLIENT = '192.168.1.69'  # UDP Client
+
+        self.DISPLAY_BARS = True
+        self.AUTO_MODULATE = False

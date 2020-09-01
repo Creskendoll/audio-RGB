@@ -43,6 +43,7 @@ class AudioWorker(object):
 
     # Runs async and populates the queue with states and strings
     def _run(self):
+        MAX_CHANNEL_NO = 1024
         # Run continuously
         while self.running:
             config = self.config
@@ -62,41 +63,48 @@ class AudioWorker(object):
             freqs, y = get_fft(data, config.BUFFER_SIZE, config.SAMPLE_RATE)
 
             # Average the samples
-            # y=smoothMemory(y,3)
+            # y = smoothMemory(y, 5)
 
             # Normalize
             y = y / 5
 
+            DIVIDE_BY = MAX_CHANNEL_NO // config.CHANNEL_RANGE
             # Average into chunks of N
-            yy = [average(y[n:int(n+config.CHANNEL_RANGE)])
-                  for n in range(0, len(y), config.CHANNEL_RANGE)]
+            yy = [average(y[n:int(n+DIVIDE_BY)])
+                  for n in range(0, len(y), DIVIDE_BY)]
             # Discard half of the samples, as they are mirrored
             yy = yy[:len(yy)//2]
 
             # Loudness detection
-            channels_avg = sum(
+            channels_sum = sum(
                 yy[config.CHANNEL_RANGE_START:config.CHANNEL_RANGE_END])
-            loudness = thresh(channels_avg * config.GAIN, config.THRESHOLD)
+            loudness = thresh(channels_sum * config.GAIN, config.THRESHOLD)
 
             # Noisiness meter
             if self.falling:
-                self.noisiness -= loudness * config.DECAY
+                if config.AUTO_MODULATE:
+                    self.noisiness -= config.DECAY
+                else:
+                    self.noisiness -= loudness * config.DECAY
             else:
-                self.noisiness += loudness * config.ATTACK
+                if config.AUTO_MODULATE:
+                    self.noisiness += config.ATTACK
+                else:
+                    self.noisiness += loudness * config.ATTACK
 
             self.noisiness = limit(self.noisiness, 0.0, 1.0)
 
             # Brightness modulation
-            modulation = config.MODULATION * limit(self.noisiness, 0.0, 1.0)
-            brightness = limit(config.MIN_BRIGHTNESS + (1. -
-                                                        config.MIN_BRIGHTNESS) * loudness, 0.0, 1.0)
+            br_value = config.MIN_BRIGHTNESS + \
+                (1. - config.MIN_BRIGHTNESS) * loudness
+            brightness = limit(br_value, 0.0, 1.0)
 
             # Hue modulation (power relationship)
             # mapping = (10 ** limit(noisiness, 0.0, 1.0)) / 10.0
             # mapping = mapping * 1.1 - 0.11
 
             # Linear mapping
-            mapping = (10 * limit(self.noisiness, 0.0, 1.0)) / 10.0
+            mapping = limit(self.noisiness, 0.0, 1.0)
 
             hue = mapval(mapping, 0.0, 1.0, config.MIN_HUE, config.MAX_HUE)
 
@@ -111,15 +119,16 @@ class AudioWorker(object):
             # if COM_PORT:
             #     RGB.update([int(red),int(green),int(blue)])
 
-            # Debug information
-            labels = list(yy)
-            bars = list(yy)
-            labels.extend(['-', 'loud', 'noise', 'map', 'brght',
-                           '-', 'hue', 'red', 'grn', 'blue'])
-            bars.extend([0, loudness, self.noisiness, mapping, brightness, 0,
-                         hue/360.0, red/255.0, green/255.0, blue/255.0])
+            if config.DISPLAY_BARS:
+                # Debug information
+                labels = list(yy)
+                bars = list(yy)
+                labels.extend(['-', 'loud', 'noise', 'map', 'brght',
+                               '-', 'hue', 'red', 'grn', 'blue'])
+                bars.extend([0, loudness, self.noisiness, mapping, brightness, 0,
+                             hue/360.0, red/255.0, green/255.0, blue/255.0])
 
-            update_bars(labels, bars)
+                update_bars(labels, bars)
 
             colors = {
                 "time": 0,
