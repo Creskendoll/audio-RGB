@@ -1,19 +1,23 @@
 class WorkerConfig(object):
     def __init__(self):
         super().__init__()
+        self.current_led_color = (0, 0, 0)
+        self.is_boi_active = False
         # Loudness detect:
         # frequency channel of the FFT to use (see console output to decide)
         self.CHANNEL_RANGE = 150
         self.CHANNEL_RANGE_START = 0
         self.CHANNEL_RANGE_END = 3
-        self.GAIN = 0.2       # audio gain (multiplier)
+        self.GAIN = 0.6       # audio gain (multiplier)
         self.THRESHOLD = 0.2  # audio trigger threshold
 
-        self.ATTACK = 0.008  # amount of rowdz increase with loudness
-        self.DECAY = 0.006   # amount of rowdz decay
+        self.BOI_THRESHOLD = 0.9  # audio trigger threshold
+
+        self.ATTACK = 0.002  # amount of rowdz increase with loudness
+        self.DECAY = 0.002   # amount of rowdz decay
 
         # Brightness:
-        self.MIN_BRIGHTNESS = 0.3    # minimum brightness
+        self.MIN_BRIGHTNESS = 0.2    # minimum brightness
 
         # Hue mapping:
         self.MIN_HUE = 0
@@ -30,4 +34,4 @@ class WorkerConfig(object):
         self.CLIENT = '192.168.1.69'  # UDP Client
 
         self.DISPLAY_BARS = True
-        self.AUTO_MODULATE = False
+        self.AUTO_MODULATE = True

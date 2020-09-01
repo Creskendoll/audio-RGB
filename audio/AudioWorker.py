@@ -77,7 +77,7 @@ class AudioWorker(object):
 
             # Loudness detection
             channels_sum = sum(
-                yy[config.CHANNEL_RANGE_START:config.CHANNEL_RANGE_END])
+                yy[config.CHANNEL_RANGE_START:config.CHANNEL_RANGE_END]) / (config.CHANNEL_RANGE_END - config.CHANNEL_RANGE_START)
             loudness = thresh(channels_sum * config.GAIN, config.THRESHOLD)
 
             # Noisiness meter
@@ -116,9 +116,6 @@ class AudioWorker(object):
             # Display colour
             red, green, blue = hsv2rgb(hue, 1.0, brightness)
 
-            # if COM_PORT:
-            #     RGB.update([int(red),int(green),int(blue)])
-
             if config.DISPLAY_BARS:
                 # Debug information
                 labels = list(yy)
@@ -130,8 +127,11 @@ class AudioWorker(object):
 
                 update_bars(labels, bars)
 
+            config.current_led_color = (red, green, blue)
+            config.is_boi_active = brightness > config.BOI_THRESHOLD
+
             colors = {
-                "time": 0,
+                "boi": str(config.is_boi_active),
                 "red": red,
                 "green": green,
                 "blue": blue
