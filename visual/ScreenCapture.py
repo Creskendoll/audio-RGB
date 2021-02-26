@@ -42,6 +42,7 @@ with mss() as sct:
 
         colors = {
             "time": 0,
+            "boi": str(True),
             "red": avg_color[2],
             "green": avg_color[1],
             "blue": avg_color[0]

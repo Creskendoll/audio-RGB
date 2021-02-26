@@ -1,14 +1,22 @@
 from tkinter import *
+from tkinter.ttk import Style
 from audio.AudioWorker import AudioWorker
 from audio.WorkerConfig import WorkerConfig
-import copy
-import paramiko
+from copy import deepcopy
+from paramiko import SSHClient, AutoAddPolicy
 from os import environ
+from os import path
 
 root = Tk()
 root.title("LED Config Editor")
+# root.iconphoto(False, PhotoImage(file=path.dirname(
+#     path.realpath(__file__)) + '/icon.jpg'))
+# root.iconbitmap(path.dirname(
+#     path.realpath(__file__)) + '/icon.jpg')
+style = Style(root)
+style.theme_use('clam')
 config = WorkerConfig()
-init_config = copy.deepcopy(config)
+init_config = deepcopy(config)
 
 
 def reset_config():
@@ -29,6 +37,7 @@ threshold_var = DoubleVar(root, value=config.THRESHOLD)
 boi_threshold_var = DoubleVar(root, value=config.BOI_THRESHOLD)
 modulation_attack_var = DoubleVar(root, value=config.ATTACK)
 modulation_decay_var = DoubleVar(root, value=config.DECAY)
+peak_time_var = IntVar(root, value=config.PEAK_TIME_MARGIN)
 channel_range_start = IntVar(root, value=config.CHANNEL_RANGE_START)
 channel_range_end = IntVar(root, value=config.CHANNEL_RANGE_END)
 auto_modulate_var = BooleanVar(root, value=config.AUTO_MODULATE)
@@ -70,6 +79,11 @@ def set_modulation_decay(d):
     modulation_decay_var.set(d)
 
 
+def set_peak_time(d):
+    config.PEAK_TIME_MARGIN = int(d)
+    peak_time_var.set(d)
+
+
 def set_bars():
     config.DISPLAY_BARS = display_bars_var.get()
 
@@ -87,8 +101,8 @@ def set_channel_range(channel_min, channel_max):
 
 
 def start_client():
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh = SSHClient()
+    ssh.set_missing_host_key_policy(AutoAddPolicy())
     ssh.connect(config.CLIENT, port=22, username="pi",
                 password=environ.get("PI_PASS"))
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(
@@ -112,7 +126,7 @@ if __name__ == '__main__':
     intensity_frame.pack(fill="both", expand="yes")
 
     label = Label(intensity_frame, text="Gain")
-    gain_scale = Scale(intensity_frame, from_=0., to=1., orient=HORIZONTAL,
+    gain_scale = Scale(intensity_frame, from_=0.001, to=1., orient=HORIZONTAL,
                        length=SCALE_LEN, resolution=0.01, command=set_gain, var=gain_var)
     label.pack()
     gain_scale.pack()
@@ -130,7 +144,7 @@ if __name__ == '__main__':
     threshold_scale.pack()
 
     label = Label(intensity_frame, text="BOI Threshold")
-    boi_threshold_scale = Scale(intensity_frame, from_=0.01, to=1., orient=HORIZONTAL,
+    boi_threshold_scale = Scale(intensity_frame, from_=0., to=1., orient=HORIZONTAL,
                                 length=SCALE_LEN, resolution=0.01, command=set_boi_threshold, var=boi_threshold_var)
     label.pack()
     boi_threshold_scale.pack()
@@ -179,6 +193,13 @@ if __name__ == '__main__':
                                    length=SCALE_LEN, resolution=0.0005, command=set_modulation_decay, var=modulation_decay_var)
     label.pack()
     modulation_decay_scale.pack()
+
+    label = Label(modulation_frame,
+                  text="Peak Delta Time Margin (Milliseconds)")
+    modulation_time_margin = Scale(modulation_frame, from_=1, to=500, orient=HORIZONTAL,
+                                   length=SCALE_LEN, command=set_peak_time, var=peak_time_var)
+    label.pack()
+    modulation_time_margin.pack()
 
     auto_modulate_check = Checkbutton(
         modulation_frame, text='Auto Modulate', var=auto_modulate_var, onvalue=True, offvalue=False, command=set_auto_modulate)

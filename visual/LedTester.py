@@ -33,6 +33,7 @@ def sendData(red_scale, green_scale, blue_scale):
     }
     while True:
         colors = {
+            "boi": str(False),
             "red": red_scale.get(),
             "green": green_scale.get(),
             "blue": blue_scale.get()

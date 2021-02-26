@@ -5,6 +5,8 @@ class WorkerConfig(object):
         self.is_boi_active = False
         # Loudness detect:
         # frequency channel of the FFT to use (see console output to decide)
+        self.MAX_CHANNEL_NO = 1024
+
         self.CHANNEL_RANGE = 150
         self.CHANNEL_RANGE_START = 0
         self.CHANNEL_RANGE_END = 3
@@ -15,6 +17,9 @@ class WorkerConfig(object):
 
         self.ATTACK = 0.002  # amount of rowdz increase with loudness
         self.DECAY = 0.002   # amount of rowdz decay
+        self.JUMP_THRESHOLD = 0.9
+        self.HUE_OFFSET = 0.1
+        self.PEAK_TIME_MARGIN = 150
 
         # Brightness:
         self.MIN_BRIGHTNESS = 0.2    # minimum brightness

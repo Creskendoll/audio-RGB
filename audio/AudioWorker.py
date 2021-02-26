@@ -6,6 +6,8 @@ from audio.WorkerConfig import WorkerConfig
 import pyaudio
 from misc.SignalTransmiter import SignalTransmiter
 from misc.helpers import *
+from time import time
+from random import random
 
 
 class AudioWorker(object):
@@ -43,7 +45,9 @@ class AudioWorker(object):
 
     # Runs async and populates the queue with states and strings
     def _run(self):
-        MAX_CHANNEL_NO = 1024
+
+        prev_peak_hit = time() * 1000
+        is_boi_active = False
         # Run continuously
         while self.running:
             config = self.config
@@ -68,7 +72,7 @@ class AudioWorker(object):
             # Normalize
             y = y / 5
 
-            DIVIDE_BY = MAX_CHANNEL_NO // config.CHANNEL_RANGE
+            DIVIDE_BY = config.MAX_CHANNEL_NO // config.CHANNEL_RANGE
             # Average into chunks of N
             yy = [average(y[n:int(n+DIVIDE_BY)])
                   for n in range(0, len(y), DIVIDE_BY)]
@@ -79,34 +83,51 @@ class AudioWorker(object):
             channels_sum = sum(
                 yy[config.CHANNEL_RANGE_START:config.CHANNEL_RANGE_END]) / (config.CHANNEL_RANGE_END - config.CHANNEL_RANGE_START)
             loudness = thresh(channels_sum * config.GAIN, config.THRESHOLD)
+            loudness = limit(loudness, 0.0, 1.0)
+
+            # Brightness modulation
+            brightness = config.MIN_BRIGHTNESS + \
+                (1. - config.MIN_BRIGHTNESS) * loudness
+            brightness = limit(brightness, 0.0, 1.0)
+
+            current_time = time() * 1000
+            can_hit = current_time - prev_peak_hit >= config.PEAK_TIME_MARGIN
 
             # Noisiness meter
             if self.falling:
                 if config.AUTO_MODULATE:
                     self.noisiness -= config.DECAY
-                else:
-                    self.noisiness -= loudness * config.DECAY
+                elif loudness > config.JUMP_THRESHOLD and can_hit:
+                    # self.noisiness -= loudness * config.DECAY
+                    self.noisiness -= config.HUE_OFFSET + \
+                        (random() * config.HUE_OFFSET)
             else:
                 if config.AUTO_MODULATE:
                     self.noisiness += config.ATTACK
-                else:
-                    self.noisiness += loudness * config.ATTACK
+                elif loudness > config.JUMP_THRESHOLD and can_hit:
+                    # self.noisiness += loudness * config.ATTACK
+                    self.noisiness += config.HUE_OFFSET + \
+                        (random() * config.HUE_OFFSET)
+
+            if not is_boi_active:
+                config.is_boi_active = loudness > config.BOI_THRESHOLD
+                is_boi_active = config.is_boi_active
+
+            if can_hit:
+                prev_peak_hit = current_time
+                is_boi_active = False
 
             self.noisiness = limit(self.noisiness, 0.0, 1.0)
-
-            # Brightness modulation
-            br_value = config.MIN_BRIGHTNESS + \
-                (1. - config.MIN_BRIGHTNESS) * loudness
-            brightness = limit(br_value, 0.0, 1.0)
 
             # Hue modulation (power relationship)
             # mapping = (10 ** limit(noisiness, 0.0, 1.0)) / 10.0
             # mapping = mapping * 1.1 - 0.11
 
             # Linear mapping
-            mapping = limit(self.noisiness, 0.0, 1.0)
+            # mapping = limit(self.noisiness, 0.0, 1.0)
 
-            hue = mapval(mapping, 0.0, 1.0, config.MIN_HUE, config.MAX_HUE)
+            hue = mapval(self.noisiness, 0.0, 1.0,
+                         config.MIN_HUE, config.MAX_HUE)
 
             if self.noisiness > 0.99:
                 self.falling = True
@@ -120,15 +141,14 @@ class AudioWorker(object):
                 # Debug information
                 labels = list(yy)
                 bars = list(yy)
-                labels.extend(['-', 'loud', 'noise', 'map', 'brght',
+                labels.extend(['-', 'loud', 'brght', 'noise',
                                '-', 'hue', 'red', 'grn', 'blue'])
-                bars.extend([0, loudness, self.noisiness, mapping, brightness, 0,
+                bars.extend([0, loudness, brightness, self.noisiness, 0,
                              hue/360.0, red/255.0, green/255.0, blue/255.0])
 
                 update_bars(labels, bars)
 
             config.current_led_color = (red, green, blue)
-            config.is_boi_active = brightness > config.BOI_THRESHOLD
 
             colors = {
                 "boi": str(config.is_boi_active),

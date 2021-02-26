@@ -1,0 +1,5 @@
+python3: can't open file 'misc/server.py': [Errno 2] No such file or directory
+Traceback (most recent call last):
+  File "ScreenCapture.py", line 41, in <module>
+    server.sendto(msg, (CLIENT, 37020))
+OSError: [Errno 101] Network is unreachable
