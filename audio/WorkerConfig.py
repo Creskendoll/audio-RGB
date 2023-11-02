@@ -7,7 +7,7 @@ class WorkerConfig(object):
         # frequency channel of the FFT to use (see console output to decide)
         self.MAX_CHANNEL_NO = 1024
 
-        self.CHANNEL_RANGE = 150
+        self.CHANNEL_RANGE = 50
         self.CHANNEL_RANGE_START = 0
         self.CHANNEL_RANGE_END = 3
         self.GAIN = 0.6       # audio gain (multiplier)
@@ -22,7 +22,7 @@ class WorkerConfig(object):
         self.PEAK_TIME_MARGIN = 150
 
         # Brightness:
-        self.MIN_BRIGHTNESS = 0.2    # minimum brightness
+        self.MIN_BRIGHTNESS = 0.1    # minimum brightness
 
         # Hue mapping:
         self.MIN_HUE = 0
@@ -36,7 +36,7 @@ class WorkerConfig(object):
         self.BUFFER_SIZE = 2**12
         self.CUTOFF_FREQ = 20000     # LPF freq (Hz)
 
-        self.CLIENT = '192.168.1.69'  # UDP Client
+        self.CLIENT = 'kenpi.local'  # UDP Client
 
         self.DISPLAY_BARS = True
         self.AUTO_MODULATE = True

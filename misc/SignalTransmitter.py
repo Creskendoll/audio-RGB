@@ -2,7 +2,7 @@ import socket
 from json import dumps
 
 
-class SignalTransmiter(object):
+class SignalTransmitter(object):
     def __init__(self):
         # UDP broadcast
         server = socket.socket(
@@ -16,5 +16,8 @@ class SignalTransmiter(object):
         self.server = server
 
     def send(self, package: dict, client_address: str):
-        msg = dumps(package).encode('utf-8')
-        self.server.sendto(msg, (client_address, 37020))
+        try:
+            msg = dumps(package).encode('utf-8')
+            self.server.sendto(msg, (client_address, 37020))
+        except:
+            print(f"Error sending UDP packet to {client_address}")

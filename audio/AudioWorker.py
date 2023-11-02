@@ -1,10 +1,9 @@
 from threading import Thread
-from StateEnum import StateEnum
-from scipy import average, array, pi, signal
+from scipy import average, array, signal
 import struct
 from audio.WorkerConfig import WorkerConfig
 import pyaudio
-from misc.SignalTransmiter import SignalTransmiter
+from misc.SignalTransmitter import SignalTransmitter
 from misc.helpers import *
 from time import time
 from random import random
@@ -20,7 +19,7 @@ class AudioWorker(object):
         self.falling = False     # Is modulation rising or falling
         self.noisiness = 0
 
-        self.transmitter = SignalTransmiter()
+        self.transmitter = SignalTransmitter()
 
         p = pyaudio.PyAudio()
         self.stream = p.open(format=pyaudio.paInt16, channels=1, rate=config.SAMPLE_RATE,
@@ -43,7 +42,6 @@ class AudioWorker(object):
             self.running = False
             self.thread.join()
 
-    # Runs async and populates the queue with states and strings
     def _run(self):
 
         prev_peak_hit = time() * 1000
@@ -74,7 +72,7 @@ class AudioWorker(object):
 
             DIVIDE_BY = config.MAX_CHANNEL_NO // config.CHANNEL_RANGE
             # Average into chunks of N
-            yy = [average(y[n:int(n+DIVIDE_BY)])
+            yy = [average(y[n:int(n+DIVIDE_BY)]) * config.GAIN
                   for n in range(0, len(y), DIVIDE_BY)]
             # Discard half of the samples, as they are mirrored
             yy = yy[:len(yy)//2]
@@ -82,7 +80,7 @@ class AudioWorker(object):
             # Loudness detection
             channels_sum = sum(
                 yy[config.CHANNEL_RANGE_START:config.CHANNEL_RANGE_END]) / (config.CHANNEL_RANGE_END - config.CHANNEL_RANGE_START)
-            loudness = thresh(channels_sum * config.GAIN, config.THRESHOLD)
+            loudness = thresh(channels_sum, config.THRESHOLD)
             loudness = limit(loudness, 0.0, 1.0)
 
             # Brightness modulation
@@ -134,7 +132,6 @@ class AudioWorker(object):
             elif self.noisiness < 0.01:
                 self.falling = False
 
-            # Display colour
             red, green, blue = hsv2rgb(hue, 1.0, brightness)
 
             if config.DISPLAY_BARS:
@@ -149,6 +146,10 @@ class AudioWorker(object):
                 update_bars(labels, bars)
 
             config.current_led_color = (red, green, blue)
+
+            # Dim the lights when the bass hits
+            if brightness > config.BOI_THRESHOLD:
+                red, green, blue = 0, 0, 0
 
             colors = {
                 "boi": str(config.is_boi_active),

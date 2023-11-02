@@ -15,14 +15,12 @@ prev_data = None
 while True:
     data, addr = client.recvfrom(1024)
     data = json.loads(data.decode('utf-8'))
-    # led.color = (1,1,0)
     if prev_data is None or prev_data != data:
         led.color = (data['red']/255, data['green']/255, data['blue']/255)
         if data["boi"] == str(True):
             BOI_PIN.on()
         else:
             BOI_PIN.off()
-        # print(data)
         prev_data = data
     #server_time = float(data['time'])
     #print("Latency:", time.time() - server_time)
